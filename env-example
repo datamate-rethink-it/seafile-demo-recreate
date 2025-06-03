@@ -3,6 +3,8 @@ ADMIN_PW= # must be the same as the initial admin in seafile-compose/.env
 SEAFILE_URL=https://seafile-demo.de
 SEASEARCH_PW= # must be the base64 password for seafevents.conf
 DEFAULT_PW= # special chars have to be escaped
+MYSQL_ROOT_PASSWORD=
+OFFICE_EDITOR=   # add "onlyoffice" or "collabora"
 
 # Email configuration
 #EMAIL_HOST=

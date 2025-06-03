@@ -1,1 +1,1 @@
-I mount the images as volume in seafile-12.yml
+I copy these images to seahub-data/custom.

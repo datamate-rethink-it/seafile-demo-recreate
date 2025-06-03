@@ -89,15 +89,6 @@ LOGIN_ATTEMPT_LIMIT = 5
 #}
 ENABLE_DELETE_ACCOUNT = False
 
-# collabora
-OFFICE_SERVER_TYPE = 'CollaboraOffice'
-ENABLE_OFFICE_WEB_APP = True
-OFFICE_WEB_APP_BASE_URL = '${SEAFILE_URL}:6232/hosting/discovery'
-WOPI_ACCESS_TOKEN_EXPIRATION = 30 * 60   # seconds
-OFFICE_WEB_APP_FILE_EXTENSION = ('odp', 'ods', 'odt', 'xls', 'xlsb', 'xlsm', 'xlsx','ppsx', 'ppt', 'pptm', 'pptx', 'doc', 'docm', 'docx')
-ENABLE_OFFICE_WEB_APP_EDIT = True
-OFFICE_WEB_APP_EDIT_FILE_EXTENSION = ('odp', 'ods', 'odt', 'xls', 'xlsb', 'xlsm', 'xlsx','ppsx', 'ppt', 'pptm', 'pptx', 'doc', 'docm', 'docx')
-
 # SAML
 #ENABLE_SAML = True
 #...
@@ -118,6 +109,28 @@ NOTIFY_ADMIN_AFTER_REGISTRATION = False
 
 " | tee -a /opt/seafile-server/seafile/conf/seahub_settings.py >/dev/null
 
+if [ ${OFFICE_EDITOR} == "collabora" ];
+  echo "
+# collabora
+OFFICE_SERVER_TYPE = 'CollaboraOffice'
+ENABLE_OFFICE_WEB_APP = True
+OFFICE_WEB_APP_BASE_URL = '${SEAFILE_URL}:6232/hosting/discovery'
+WOPI_ACCESS_TOKEN_EXPIRATION = 30 * 60   # seconds
+OFFICE_WEB_APP_FILE_EXTENSION = ('odp', 'ods', 'odt', 'xls', 'xlsb', 'xlsm', 'xlsx','ppsx', 'ppt', 'pptm', 'pptx', 'doc', 'docm', 'docx')
+ENABLE_OFFICE_WEB_APP_EDIT = True
+OFFICE_WEB_APP_EDIT_FILE_EXTENSION = ('odp', 'ods', 'odt', 'xls', 'xlsb', 'xlsm', 'xlsx','ppsx', 'ppt', 'pptm', 'pptx', 'doc', 'docm', 'docx')
+" | tee -a /opt/seafile-server/seafile/conf/seahub_settings.py >/dev/null
+elif [ ${OFFICE_EDITOR} == "onlyoffice" ];
+  echo "
+# OnlyOffice
+ENABLE_ONLYOFFICE = True
+ONLYOFFICE_APIJS_URL = '${SEAFILE_URL}:6233/web-apps/apps/api/documents/api.js'
+ONLYOFFICE_FILE_EXTENSION = ('doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'odt', 'fodt', 'odp', 'fodp', 'ods', 'fods', 'csv', 'ppsx', 'pps', 'pdf')
+ONLYOFFICE_EDIT_FILE_EXTENSION = ('docx', 'pptx', 'xlsx', 'pdf')
+ONLYOFFICE_JWT_SECRET = 'gBXWfcsPLTOedgC7nVjJwLMm8JxwE2iK'
+" | tee -a /opt/seafile-server/seafile/conf/seahub_settings.py >/dev/null
+fi
+
 ## update seafile.conf
 echo "
 [general]
@@ -136,7 +149,7 @@ type = mysql
 host = mariadb
 port = 3306
 username = seafile
-password = topsecret2
+password = ${MYSQL_ROOT_PASSWORD}
 name = seahub_db
 
 [SEAHUB EMAIL]
@@ -153,8 +166,8 @@ enabled = true
 external_es_server = true
 es_host = elasticsearch
 es_port = 9200
-enabled = false
-interval = 10m
+enabled = true
+interval = 1m
 highlight = fvh
 index_office_pdf = true
 
@@ -163,7 +176,7 @@ enabled = true
 suffix = md,txt,doc,docx,xls,xlsx,ppt,pptx,sdoc
 
 [SEASEARCH]
-enabled = true
+enabled = false
 seasearch_url = http://seasearch:4080
 seasearch_token = ${SEASEARCH_PW}
 interval = 10m
@@ -186,6 +199,11 @@ interval = 10m
 # -v $(pwd)/../../.env:/tmp/.env \
 #php-init
 
+# copy login-bg and logo:
+cp /opt/seafile-demo-recreate/files/customizing/* /opt/seafile-server/seafile/seahub-data/custom/
+
+# copy bib_import (required for big import)
+cp -r /opt/seafile-demo-recreate/files/bib_import /opt/seafile-server/seafile/
 
 ## final restart
 docker compose down
@@ -216,9 +234,8 @@ function create_user(){
     USERTOKEN=$(/usr/bin/curl -s -d "username=${1}@datamate.org&password=${DEFAULT_PW}" "${SEAFILE_URL}/api2/auth-token/" | /usr/bin/jq -r ".token")
     curl -H "Authorization: Token ${USERTOKEN}" -F "avatar=@/opt/seafile-demo-recreate/files/avatars/${1}.png" -F "avatar_size=64" "${SEAFILE_URL}/api/v2.1/user-avatar/"
     curl -d "name=Bibliothek (verschlüsselt)&passwd=${DEFAULT_PW}" -H "Authorization: Token $USERTOKEN" -H 'Accept: application/json; indent=4' "${SEAFILE_URL}/api2/repos/"
-    # bib_import muss an der richtigen stelle liegen. per mount...
-    #docker exec seafile-server /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_a -n 'Bibliothek-A' -u "${1}@datamate.org"
-    #docker exec seafile-server /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_b -n 'Bibliothek-B' -u "${1}@datamate.org"
+    docker exec seafile-server /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_a -n 'Bibliothek-A' -u "${USERACCOUNT}"
+    docker exec seafile-server /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_b -n 'Bibliothek-B' -u "${USERACCOUNT}"
     curl -X PUT -d "login_id=${1}" -H "Authorization: Token ${TOKEN}" -H 'Accept: application/json; charset=utf-8; indent=4' "${SEAFILE_URL}/api/v2.1/admin/users/${USERACCOUNT}/"
 }
 
