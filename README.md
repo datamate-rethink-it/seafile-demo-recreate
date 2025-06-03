@@ -26,3 +26,5 @@ Create a cronjob that simply executes `/opt/seafile-demo-recreate/reset.sh` like
 
 - rework README.md
 - single-sign-on
+- chmod +x reset.sh
+- SITE_TITLE

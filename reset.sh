@@ -69,6 +69,9 @@ done
 printf "%b(7): add seahub_settings.py configuration %b\n" "$RED" "$NC"
 echo "
 
+SITE_TITLE = Seafile Demo
+SITE_NAME = Seafile Demo
+
 #BRANDING_CSS = 'custom/custom.css'
 
 # MULTI TENANCY MODE
@@ -109,7 +112,7 @@ NOTIFY_ADMIN_AFTER_REGISTRATION = False
 
 " | tee -a /opt/seafile-server/seafile/conf/seahub_settings.py >/dev/null
 
-if [ ${OFFICE_EDITOR} == "collabora" ];
+if [ ${OFFICE_EDITOR} == "collabora" ]; then
   echo "
 # collabora
 OFFICE_SERVER_TYPE = 'CollaboraOffice'
@@ -120,7 +123,7 @@ OFFICE_WEB_APP_FILE_EXTENSION = ('odp', 'ods', 'odt', 'xls', 'xlsb', 'xlsm', 'xl
 ENABLE_OFFICE_WEB_APP_EDIT = True
 OFFICE_WEB_APP_EDIT_FILE_EXTENSION = ('odp', 'ods', 'odt', 'xls', 'xlsb', 'xlsm', 'xlsx','ppsx', 'ppt', 'pptm', 'pptx', 'doc', 'docm', 'docx')
 " | tee -a /opt/seafile-server/seafile/conf/seahub_settings.py >/dev/null
-elif [ ${OFFICE_EDITOR} == "onlyoffice" ];
+elif [ ${OFFICE_EDITOR} == "onlyoffice" ]; then
   echo "
 # OnlyOffice
 ENABLE_ONLYOFFICE = True
