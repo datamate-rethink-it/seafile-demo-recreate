@@ -69,8 +69,8 @@ done
 printf "%b(7): add seahub_settings.py configuration %b\n" "$RED" "$NC"
 echo "
 
-SITE_TITLE = Seafile Demo
-SITE_NAME = Seafile Demo
+SITE_TITLE = 'Seafile Demo'
+SITE_NAME = 'Seafile Demo'
 
 #BRANDING_CSS = 'custom/custom.css'
 
