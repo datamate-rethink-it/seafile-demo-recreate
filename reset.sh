@@ -180,11 +180,11 @@ suffix = md,txt,doc,docx,xls,xlsx,ppt,pptx,sdoc
 enabled = true
 seasearch_url = http://seasearch:4080
 seasearch_token = ${SEASEARCH_PW}
-interval = 10m
+interval = 2m
 " > /opt/seafile-server/seafile/conf/seafevents.conf
 
 # restart and sleep (necessary, otherwise auth-token is not received...)
-#docker exec seafile-server /opt/seatable/scripts/seatable.sh
+#docker exec seafile /opt/seatable/scripts/seatable.sh
 #sleep 30
 
 # create users TODO: noch einbauen...
@@ -235,8 +235,8 @@ function create_user(){
     USERTOKEN=$(/usr/bin/curl -s -d "username=${1}@datamate.org&password=${DEFAULT_PW}" "${SEAFILE_URL}/api2/auth-token/" | /usr/bin/jq -r ".token")
     curl -H "Authorization: Token ${USERTOKEN}" -F "avatar=@/opt/seafile-demo-recreate/files/avatars/${1}.png" -F "avatar_size=64" "${SEAFILE_URL}/api/v2.1/user-avatar/"
     curl -d "name=Bibliothek (verschlüsselt)&passwd=${DEFAULT_PW}" -H "Authorization: Token $USERTOKEN" -H 'Accept: application/json; indent=4' "${SEAFILE_URL}/api2/repos/"
-    docker exec seafile-server /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_a -n 'Bibliothek-A' -u "${USERACCOUNT}"
-    docker exec seafile-server /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_b -n 'Bibliothek-B' -u "${USERACCOUNT}"
+    docker exec seafile /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_a -n 'Bibliothek-A' -u "${USERACCOUNT}"
+    docker exec seafile /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_b -n 'Bibliothek-B' -u "${USERACCOUNT}"
     curl -X PUT -d "login_id=${1}" -H "Authorization: Token ${TOKEN}" -H 'Accept: application/json; charset=utf-8; indent=4' "${SEAFILE_URL}/api/v2.1/admin/users/${USERACCOUNT}/"
 }
 
