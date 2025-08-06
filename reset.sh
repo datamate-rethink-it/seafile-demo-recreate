@@ -3,7 +3,7 @@
 ## get passwords
 source /opt/seafile-demo-recreate/.env
 
-SEAFILE_URL=${SEAFILE_SERVER_PROTOCOL}://${SEAFILE_SERVER_HOSTNAME}
+SEAFILE_URL="${SEAFILE_SERVER_PROTOCOL}://${SEAFILE_SERVER_HOSTNAME}"
 
 healthcheck() {
     suffix=$1
@@ -45,6 +45,7 @@ TIMEOUT=120             # Total timeout duration in seconds (2 minutes)
 INTERVAL=10             # Interval between pings in seconds
 start_time=$(date +%s)  # start time
 
+echo "Check if ${SEAFILE_URL} is reachable"
 while true; do
   if curl --silent --fail "${SEAFILE_URL}/api2/ping/" > /dev/null; then
     echo "Seafile Server is available. Continuing..."
