@@ -126,6 +126,9 @@ ONLYOFFICE_APIJS_URL = '${SEAFILE_URL}:6233/web-apps/apps/api/documents/api.js'
 ONLYOFFICE_FILE_EXTENSION = ('doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx', 'odt', 'fodt', 'odp', 'fodp', 'ods', 'fods', 'csv', 'ppsx', 'pps', 'pdf')
 ONLYOFFICE_EDIT_FILE_EXTENSION = ('docx', 'pptx', 'xlsx', 'pdf')
 ONLYOFFICE_JWT_SECRET = 'gBXWfcsPLTOedgC7nVjJwLMm8JxwE2iK'
+
+ENABLE_METADATA_MANAGEMENT = True
+METADATA_SERVER_URL = 'http://metadata:8084'
 " | tee -a /opt/seafile-server/seafile/conf/seahub_settings.py >/dev/null
 fi
 
