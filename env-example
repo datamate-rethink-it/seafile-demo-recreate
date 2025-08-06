@@ -1,5 +1,5 @@
 # components to be used; IMPORTANT: there should be no space between the files names !
-COMPOSE_FILE='compose/beszel.yml,compose/caddy.yml,compose/seafile-13.yml,compose/mariadb.yml,compose/redis.yml,compose/seadoc.yml,compose/seasearch.yml,compose/notification.yml,compose/onlyoffice.yml'
+COMPOSE_FILE='compose/beszel.yml,compose/caddy.yml,compose/seafile-13.yml,compose/mariadb.yml,compose/redis.yml,compose/seadoc.yml,compose/seasearch.yml,compose/notification.yml,compose/onlyoffice.yml,compose/metadata.yml'
 COMPOSE_PATH_SEPARATOR=','
 
 SEAFILE_IMAGE=seafileltd/seafile-pro-mc:13.0-latest
@@ -7,6 +7,7 @@ SEADOC_IMAGE=seafileltd/sdoc-server:2.0-latest
 SEASEARCH_IMAGE=seafileltd/seasearch:1.0-latest
 NOTIFICATION_SERVER_IMAGE=seafileltd/notification-server:13.0-latest
 ONLYOFFICE_IMAGE=onlyoffice/documentserver:8.3.3.1
+MD_IMAGE=seafileltd/seafile-md-server:13.0-latest
 
 TIME_ZONE=Europe/Berlin
 
