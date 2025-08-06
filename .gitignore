@@ -1,3 +1,4 @@
 .env
 compose/beszel.yml
+compose/beszel_agent_data
 seafile-license.txt
