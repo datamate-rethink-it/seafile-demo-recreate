@@ -3,6 +3,8 @@
 ## get passwords
 source /opt/seafile-demo-recreate/.env
 
+SEAFILE_URL=${SEAFILE_SERVER_PROTOCOL}://${SEAFILE_SERVER_HOSTNAME}
+
 healthcheck() {
     suffix=$1
     if [ -n "$HEALTHCHECK_URL" ]; then
@@ -23,21 +25,17 @@ docker compose down --remove-orphans
 
 ## remove old stuff
 rm -r /opt/seafile-server
+rm -r /opt/seafile-data
 rm -r /opt/mariadb
+rm -r /opt/mariadb-data
 rm -r /opt/seadoc-data
 rm -r /opt/seasearch-data
 rm -r /opt/notification-data
-
-## TODO: kann weg...
-#rm -r /opt/seatable-demo-recreate/files/output/template_token.txt # da kommt der base_api_token von templates base rein...
 
 ## TODO: später
 ## copy certs
 mkdir -p /opt/seafile-server/certs
 cp /opt/seafile-demo-recreate/files/certs/* /opt/seafile-server/certs/
-
-## customizing
-# I mount the logo, background and css as volume in the seafile.yml file.
 
 ## restart
 docker compose pull
@@ -71,8 +69,6 @@ echo "
 
 SITE_TITLE = 'Seafile Demo'
 SITE_NAME = 'Seafile Demo'
-
-#BRANDING_CSS = 'custom/custom.css'
 
 # MULTI TENANCY MODE
 CLOUD_MODE = True
@@ -151,8 +147,8 @@ echo "
 type = mysql
 host = mariadb
 port = 3306
-username = seafile
-password = ${MYSQL_ROOT_PASSWORD}
+username = root
+password = ${SEAFILE_MYSQL_ROOT_PASSWORD}
 name = seahub_db
 
 [SEAHUB EMAIL]
@@ -166,20 +162,20 @@ enabled=true
 enabled = true
 
 [INDEX FILES]
-external_es_server = true
-es_host = elasticsearch
-es_port = 9200
-enabled = true
-interval = 1m
-highlight = fvh
-index_office_pdf = true
+enabled = false
+#external_es_server = false
+#es_host = elasticsearch
+#es_port = 9200
+##interval = 1m
+#highlight = fvh
+#index_office_pdf = true
 
 [FILE HISTORY]
 enabled = true
 suffix = md,txt,doc,docx,xls,xlsx,ppt,pptx,sdoc
 
 [SEASEARCH]
-enabled = false
+enabled = true
 seasearch_url = http://seasearch:4080
 seasearch_token = ${SEASEARCH_PW}
 interval = 10m
@@ -229,7 +225,7 @@ while true; do
 done
 
 # CREATE USERS 
-TOKEN=$(/usr/bin/curl -s -d "username=${ADMIN_UN}&password=${ADMIN_PW}" "${SEAFILE_URL}/api2/auth-token/" | /usr/bin/jq -r ".token")
+TOKEN=$(/usr/bin/curl -s -d "username=${SEAFILE_ADMIN_EMAIL}&password=${SEAFILE_ADMIN_PASSWORD}" "${SEAFILE_URL}/api2/auth-token/" | /usr/bin/jq -r ".token")
 curl -H "Authorization: Token ${TOKEN}" -F "avatar=@/opt/seafile-demo-recreate/files/avatars/admin.png" -F "avatar_size=64" "${SEAFILE_URL}/api/v2.1/user-avatar/"
 
 function create_user(){

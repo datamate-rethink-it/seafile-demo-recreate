@@ -1,10 +1,35 @@
-ADMIN_UN= # must be the same as the initial admin in seafile-compose/.env
-ADMIN_PW= # must be the same as the initial admin in seafile-compose/.env
-SEAFILE_URL=https://seafile-demo.de
+# components to be used; IMPORTANT: there should be no space between the files names !
+COMPOSE_FILE='caddy.yml,seafile-13.yml,mariadb.yml,redis.yml,seadoc.yml,seasearch.yml,notification.yml'
+COMPOSE_PATH_SEPARATOR=','
+
+SEAFILE_IMAGE=seafileltd/seafile-pro-mc:13.0-latest
+SEADOC_IMAGE=seafileltd/sdoc-server:2.0-latest
+SEASEARCH_IMAGE=seafileltd/seasearch:1.0-latest
+NOTIFICATION_SERVER_IMAGE=seafileltd/notification-server:13.0-latest
+
+SEAFILE_ADMIN_EMAIL= # must be the same as the initial admin in seafile-compose/.env
+SEAFILE_ADMIN_PASSWORD= # must be the same as the initial admin in seafile-compose/.env
+
+SEAFILE_SERVER_HOSTNAME=seafile-demo.de
+SEAFILE_SERVER_PROTOCOL=https
+
+# Secrets: System
+SEAFILE_MYSQL_ROOT_PASSWORD=
+REDIS_PASSWORD=
+JWT_PRIVATE_KEY=
+ONLYOFFICE_JWT_SECRET=
+
+# SeaSearch
+INIT_SS_ADMIN_USER=
+INIT_SS_ADMIN_PASSWORD=
 SEASEARCH_PW= # must be the base64 password for seafevents.conf
-DEFAULT_PW= # special chars have to be escaped
-MYSQL_ROOT_PASSWORD=
+
+# Secrets: User
+DEFAULT_PW= # default password of the users, special chars have to be escaped
+
+# Setup
 OFFICE_EDITOR=   # add "onlyoffice" or "collabora"
+SEAFILE_LOG_TO_STDOUT=true
 
 # Email configuration
 #EMAIL_HOST=

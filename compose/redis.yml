@@ -1,0 +1,23 @@
+---
+services:
+  redis:
+    image: ${SEATABLE_REDIS_IMAGE:-redis:7.2.7-bookworm}
+    restart: unless-stopped
+    container_name: redis
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?Variable is not set or empty}
+    command:
+      - /bin/sh
+      - -c
+      - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+    networks:
+      - backend-seatable-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 20s
+      retries: 3
+      timeout: 5s
+
+networks:
+  seafile-net:
+    name: seafile-net

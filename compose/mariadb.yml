@@ -1,0 +1,36 @@
+---
+services:
+  mariadb:
+    image: ${SEATABLE_DB_IMAGE:-mariadb:11.4.3-noble}
+    restart: unless-stopped
+    container_name: mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:-${MARIADB_PASSWORD}}
+      - MYSQL_LOG_CONSOLE=true
+      - MARIADB_AUTO_UPGRADE=1
+      - TZ=${TIME_ZONE}
+    volumes:
+      - "/opt/mariadb-data:/var/lib/mysql"
+      #- "/opt/seatable-compose/mariadb-custom.cnf:/etc/mysql/conf.d/99-mariadb-custom.cnf"
+    networks:
+      - backend-seatable-net
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/usr/local/bin/healthcheck.sh",
+          "--connect",
+          "--mariadbupgrade",
+          "--innodb_initialized",
+        ]
+      interval: 20s
+      retries: 3
+      start_period: 30s
+      timeout: 10s
+      # On older database containers without healthcheck users present you might need to create them manually,
+      # otherwise the container stays unhealthy.
+      # more info at https://admin.seatable.com/upgrade/extra-upgrade-notice/
+
+networks:
+  seafile-net:
+    name: seafile-net
