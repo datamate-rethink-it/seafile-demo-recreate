@@ -20,7 +20,7 @@ healthcheck() {
 healthcheck /start
 
 ## stop old containers
-cd /opt/seafile-compose
+cd /opt/seafile-demo-recreate
 docker compose down --remove-orphans
 
 ## remove old stuff
