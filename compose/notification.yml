@@ -30,7 +30,10 @@ services:
         condition: service_healthy
     networks:
       - seafile-net
+      - frontend-net
 
 networks:
   seafile-net:
     name: seafile-net
+  frontend-net:
+    name: frontend-net
