@@ -47,6 +47,8 @@ start_time=$(date +%s)  # start time
 
 echo "Check if ${SEAFILE_URL} is reachable"
 while true; do
+  sleep "$INTERVAL" # Wait for the specified interval before retrying
+
   if curl --silent --fail "${SEAFILE_URL}/api2/ping/" > /dev/null; then
     echo "Seafile Server is available. Continuing..."
     break
@@ -60,7 +62,6 @@ while true; do
     echo "Timeout reached. Exiting..."
     exit 1
   fi
-  sleep "$INTERVAL" # Wait for the specified interval before retrying
 done
 
 ## update seahub_settings.py (sollte später alles über env gehen...)
