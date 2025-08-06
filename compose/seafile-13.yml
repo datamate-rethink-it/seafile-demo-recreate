@@ -12,11 +12,11 @@ services:
       
     environment:
       - TIME_ZONE=${TIME_ZONE:-Europe/Berlin}  
-      - INIT_SEAFILE_MYSQL_ROOT_PASSWORD=${SEAFILE_MYSQL_ROOT_PASSWORD:?Variable is not set or empty}
+      - INIT_SEAFILE_MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:?Variable is not set or empty}
       - SEAFILE_MYSQL_DB_HOST=${SEAFILE_MYSQL_DB_HOST:-mariadb}
       - SEAFILE_MYSQL_DB_PORT=${SEAFILE_MYSQL_DB_PORT:-3306}
       - SEAFILE_MYSQL_DB_USER=${SEAFILE_MYSQL_DB_USER:-root}
-      - SEAFILE_MYSQL_DB_PASSWORD=${MYSQL_ROOT_PASSWORD:?Variable is not set or empty}
+      - SEAFILE_MYSQL_DB_PASSWORD=${MARIADB_ROOT_PASSWORD:?Variable is not set or empty}
       - SEAFILE_MYSQL_DB_CCNET_DB_NAME=${SEAFILE_MYSQL_DB_CCNET_DB_NAME:-ccnet_db}
       - SEAFILE_MYSQL_DB_SEAFILE_DB_NAME=${SEAFILE_MYSQL_DB_SEAFILE_DB_NAME:-seafile_db}
       - SEAFILE_MYSQL_DB_SEAHUB_DB_NAME=${SEAFILE_MYSQL_DB_SEAHUB_DB_NAME:-seahub_db}
@@ -27,7 +27,7 @@ services:
       - SITE_ROOT=${SITE_ROOT:-/}
       - NON_ROOT=${NON_ROOT:-false}
       - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY:?Variable is not set or empty}
-      - SEAFILE_LOG_TO_STDOUT=${SEAFILE_LOG_TO_STDOUT:-false}
+      - SEAFILE_LOG_TO_STDOUT=${SEAFILE_LOG_TO_STDOUT:-true}
       - ENABLE_SEADOC=${ENABLE_SEADOC:-true}
       - SEADOC_SERVER_URL=${SEAFILE_SERVER_PROTOCOL:-https}://${SEAFILE_SERVER_HOSTNAME:?Variable is not set or empty}/sdoc-server
       - CACHE_PROVIDER=${CACHE_PROVIDER:-redis}
