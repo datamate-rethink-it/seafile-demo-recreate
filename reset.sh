@@ -147,7 +147,7 @@ type = mysql
 host = mariadb
 port = 3306
 username = root
-password = ${SEAFILE_MYSQL_ROOT_PASSWORD}
+password = ${MARIADB_ROOT_PASSWORD}
 name = seahub_db
 
 [SEAHUB EMAIL]
