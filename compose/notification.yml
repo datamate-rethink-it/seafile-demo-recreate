@@ -26,7 +26,7 @@ services:
       caddy.1_handle_path.0_rewrite: "* {uri}"
       caddy.1_handle_path.1_reverse_proxy: "{{upstreams 8083}}"
     depends_on:
-      db:
+      mariadb:
         condition: service_healthy
     networks:
       - seafile-net
