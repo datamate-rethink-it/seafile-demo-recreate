@@ -6,7 +6,7 @@ services:
     volumes:
       - ${SEAFILE_VOLUME:-/opt/seafile-server}:/shared
       - type: bind
-        source: "./seafile-license.txt"
+        source: "../seafile-license.txt"
         target: "/shared/seafile/seafile-license.txt"
         read_only: ${SEAFILE_LICENSE_FORCE_READ_ONLY:-false}
       
