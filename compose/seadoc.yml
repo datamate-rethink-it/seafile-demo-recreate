@@ -31,7 +31,7 @@ services:
         condition: service_healthy
     networks:
       - seafile-net
-      - fontend-net
+      - frontend-net
 
 networks:
   seafile-net:
