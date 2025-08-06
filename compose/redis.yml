@@ -11,7 +11,7 @@ services:
       - -c
       - redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
     networks:
-      - backend-seatable-net
+      - seafile-net
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 20s

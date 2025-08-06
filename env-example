@@ -7,6 +7,8 @@ SEADOC_IMAGE=seafileltd/sdoc-server:2.0-latest
 SEASEARCH_IMAGE=seafileltd/seasearch:1.0-latest
 NOTIFICATION_SERVER_IMAGE=seafileltd/notification-server:13.0-latest
 
+TIME_ZONE=Europe/Berlin
+
 SEAFILE_ADMIN_EMAIL=
 SEAFILE_ADMIN_PASSWORD=
 

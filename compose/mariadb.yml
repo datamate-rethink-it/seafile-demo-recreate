@@ -13,7 +13,7 @@ services:
       - "/opt/mariadb-data:/var/lib/mysql"
       #- "/opt/seatable-compose/mariadb-custom.cnf:/etc/mysql/conf.d/99-mariadb-custom.cnf"
     networks:
-      - backend-seatable-net
+      - seafile-net
     healthcheck:
       test:
         [
