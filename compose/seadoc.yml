@@ -4,7 +4,7 @@ services:
     image: ${SEADOC_IMAGE:-seafileltd/sdoc-server:2.0-latest}
     container_name: seadoc
     volumes:
-      - ${SEADOC_VOLUME:-/opt/seadoc-data}:/shared
+      - ${SEADOC_VOLUME:-/opt/seadoc}:/shared
     environment:
       - DB_HOST=${SEAFILE_MYSQL_DB_HOST:-mariadb}
       - DB_PORT=${SEAFILE_MYSQL_DB_PORT:-3306}

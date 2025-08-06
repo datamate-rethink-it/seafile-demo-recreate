@@ -4,7 +4,7 @@ services:
     container_name: seafile
     restart: unless-stopped
     volumes:
-      - ${SEAFILE_VOLUME:-/opt/seafile-data}:/shared
+      - ${SEAFILE_VOLUME:-/opt/seafile-server}:/shared
       - type: bind
         source: "./seafile-license.txt"
         target: "/shared/seafile/seafile-license.txt"

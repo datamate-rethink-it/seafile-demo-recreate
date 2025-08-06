@@ -5,8 +5,8 @@ services:
     container_name: notification
     restart: always
     volumes:
-      - ${NOTIFICATION_SERVER_VOLUME:-/opt/notification-data}:/shared
-      - ${NOTIFICATION_SERVER_VOLUME:-/opt/notification-data}/logs:/shared/logs
+      - ${NOTIFICATION_SERVER_VOLUME:-/opt/notification}:/shared
+      - ${NOTIFICATION_SERVER_VOLUME:-/opt/notification}/logs:/shared/logs
     environment:
       - SEAFILE_MYSQL_DB_HOST=${SEAFILE_MYSQL_DB_HOST:-mariadb}
       - SEAFILE_MYSQL_DB_PORT=${SEAFILE_MYSQL_DB_PORT:-3306}

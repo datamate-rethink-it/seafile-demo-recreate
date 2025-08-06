@@ -25,12 +25,11 @@ docker compose down --remove-orphans
 
 ## remove old stuff
 rm -r /opt/seafile-server
-rm -r /opt/seafile-data
 rm -r /opt/mariadb
-rm -r /opt/mariadb-data
-rm -r /opt/seadoc-data
-rm -r /opt/seasearch-data
-rm -r /opt/notification-data
+rm -r /opt/seadoc
+rm -r /opt/seasearch
+rm -r /opt/notification
+rm -r /opt/onlyoffice
 
 ## TODO: später
 ## copy certs

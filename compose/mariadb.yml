@@ -10,7 +10,7 @@ services:
       - MARIADB_AUTO_UPGRADE=1
       - TZ=${TIME_ZONE}
     volumes:
-      - "/opt/mariadb-data:/var/lib/mysql"
+      - "/opt/mariadb:/var/lib/mysql"
       #- "/opt/seatable-compose/mariadb-custom.cnf:/etc/mysql/conf.d/99-mariadb-custom.cnf"
     networks:
       - seafile-net
