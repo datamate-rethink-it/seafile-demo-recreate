@@ -1,7 +1,7 @@
 ---
 services:
   seasearch:  
-    image: ${SEASEARCH_IMAGE:-seafileltd/seasearch:0.9-latest}
+    image: ${SEASEARCH_IMAGE:-seafileltd/seasearch:1.0-latest}
     container_name: seasearch
     volumes:  
       - ${SS_DATA_PATH:-/opt/seasearch}:/opt/seasearch/data  
