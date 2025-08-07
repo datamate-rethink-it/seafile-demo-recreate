@@ -142,7 +142,7 @@ multi_tenancy = true
 
 [notification]
 enabled = true
-host = notification-server
+host = notification
 port = 8083
 " | tee -a /opt/seafile-server/seafile/conf/seafile.conf >/dev/null
 
