@@ -11,7 +11,7 @@ services:
         read_only: ${SEAFILE_LICENSE_FORCE_READ_ONLY:-false}
       
     environment:
-      - TIME_ZONE=${TIME_ZONE:-Europe/Berlin}  
+      - TIME_ZONE=${TIME_ZONE:-Europe/Berlin}
       - INIT_SEAFILE_MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:?Variable is not set or empty}
       - SEAFILE_MYSQL_DB_HOST=${SEAFILE_MYSQL_DB_HOST:-mariadb}
       - SEAFILE_MYSQL_DB_PORT=${SEAFILE_MYSQL_DB_PORT:-3306}
