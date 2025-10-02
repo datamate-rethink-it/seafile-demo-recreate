@@ -1,10 +1,12 @@
 ---
 services:
-  seasearch:  
+  seasearch:
     image: ${SEASEARCH_IMAGE:-seafileltd/seasearch:1.0-latest}
     container_name: seasearch
-    volumes:  
-      - ${SS_DATA_PATH:-/opt/seasearch}:/opt/seasearch/data  
+    restart: unless-stopped
+    volumes:
+      - ${SS_DATA_PATH:-/opt/seasearch}:/opt/seasearch/data
+      - ./healthchecks/seasearch.sh:/usr/local/bin/healthcheck.sh:ro
     environment: 
       - SS_FIRST_ADMIN_USER=${INIT_SS_ADMIN_USER:-}
       - SS_FIRST_ADMIN_PASSWORD=${INIT_SS_ADMIN_PASSWORD:-}
@@ -38,6 +40,12 @@ services:
       - SS_CLUSTER_PROXY_LOG_DIR=${SS_CLUSTER_PROXY_LOG_DIR:--/opt/seasearch/data/log}
       - SS_CLUSTER_MANAGER_HOST=${SS_CLUSTER_MANAGER_HOST:-0.0.0.0}
       - SS_CLUSTER_MANAGER_PORT=${SS_CLUSTER_MANAGER_PORT:-4081}
+    healthcheck:
+      test: ["CMD-SHELL", "/usr/local/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - seafile-net
 

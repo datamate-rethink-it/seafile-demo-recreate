@@ -3,7 +3,7 @@ services:
   thumbnail:
     image: ${THUMBNAIL_IMAGE:-seafileltd/thumbnail-server:13.0-latest}
     container_name: thumbnail
-    restart: always
+    restart: unless-stopped
     volumes:
       - ${SEAFILE_VOLUME:-/opt/seafile-server}:/shared
     environment:
@@ -39,6 +39,12 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1/ping/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - frontend-net
       - seafile-net
