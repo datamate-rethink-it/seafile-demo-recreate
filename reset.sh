@@ -214,8 +214,13 @@ docker compose up -d
 
 start_time=$(date +%s)  # start time
 while true; do
+  sleep "$INTERVAL" # Wait for the specified interval before retrying
+
   if curl --silent --fail "${SEAFILE_URL}/api2/ping/" > /dev/null; then
+    echo "Seafile Server is available. Continuing..."
     break
+  else
+    echo "${SEAFILE_URL} is not available. Checking again in $INTERVAL seconds..."
   fi
   current_time=$(date +%s) # Check if the timeout has been reached
   elapsed_time=$((current_time - start_time))
@@ -225,7 +230,7 @@ while true; do
     healthcheck /fail
     exit 1
   fi
-  sleep "$INTERVAL" # Wait for the specified interval before retrying
+  
 done
 
 # CREATE USERS 
