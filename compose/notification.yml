@@ -29,6 +29,8 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+      seafile:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "/usr/local/bin/healthcheck.sh"]
       interval: 30s

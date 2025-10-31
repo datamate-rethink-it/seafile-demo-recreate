@@ -30,6 +30,8 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+      seafile:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://127.0.0.1/ping/"]
       interval: 30s
