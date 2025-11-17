@@ -5,10 +5,9 @@ services:
     container_name: notification
     restart: unless-stopped
     volumes:
-      - ${NOTIFICATION_SERVER_VOLUME:-/opt/notification}:/shared
-      - ${NOTIFICATION_SERVER_VOLUME:-/opt/notification}/logs:/shared/logs
       - ./healthchecks/notification.sh:/usr/local/bin/healthcheck.sh:ro
     environment:
+      - TZ=${TIME_ZONE:-Europe/Berlin}
       - SEAFILE_MYSQL_DB_HOST=${SEAFILE_MYSQL_DB_HOST:-mariadb}
       - SEAFILE_MYSQL_DB_PORT=${SEAFILE_MYSQL_DB_PORT:-3306}
       - SEAFILE_MYSQL_DB_USER=${SEAFILE_MYSQL_DB_USER:-root}
