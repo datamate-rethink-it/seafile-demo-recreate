@@ -238,13 +238,16 @@ TOKEN=$(/usr/bin/curl -s -d "username=${SEAFILE_ADMIN_EMAIL}&password=${SEAFILE_
 curl -H "Authorization: Token ${TOKEN}" -F "avatar=@/opt/seafile-demo-recreate/files/avatars/admin.png" -F "avatar_size=64" "${SEAFILE_URL}/api/v2.1/user-avatar/"
 
 function create_user(){
-    USERACCOUNT=$(curl -X POST -d "email=${1}@datamate.org&password=${DEFAULT_PW}&name=${2}&is_staff=${3}" -H "Authorization: Token ${TOKEN}" -H 'Accept: application/json; indent=4' "${SEAFILE_URL}/api/v2.1/admin/users/" | /usr/bin/jq -r ".email" )
-    USERTOKEN=$(/usr/bin/curl -s -d "username=${1}@datamate.org&password=${DEFAULT_PW}" "${SEAFILE_URL}/api2/auth-token/" | /usr/bin/jq -r ".token")
+  local PW="${4:-${DEFAULT_PW}}"
+  USERACCOUNT=$(curl -X POST -d "email=${1}@datamate.org&password=${PW}&name=${2}&is_staff=${3}" -H "Authorization: Token ${TOKEN}" -H 'Accept: application/json; indent=4' "${SEAFILE_URL}/api/v2.1/admin/users/" | /usr/bin/jq -r ".email" )
+  USERTOKEN=$(/usr/bin/curl -s -d "username=${1}@datamate.org&password=${PW}" "${SEAFILE_URL}/api2/auth-token/" | /usr/bin/jq -r ".token")
+  if [ -f "/opt/seafile-demo-recreate/files/avatars/${1}.png" ]; then
     curl -H "Authorization: Token ${USERTOKEN}" -F "avatar=@/opt/seafile-demo-recreate/files/avatars/${1}.png" -F "avatar_size=64" "${SEAFILE_URL}/api/v2.1/user-avatar/"
-    curl -d "name=Bibliothek (verschlüsselt)&passwd=${DEFAULT_PW}" -H "Authorization: Token $USERTOKEN" -H 'Accept: application/json; indent=4' "${SEAFILE_URL}/api2/repos/"
-    docker exec seafile /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_a -n 'Bibliothek-A' -u "${USERACCOUNT}"
-    docker exec seafile /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_b -n 'Bibliothek-B' -u "${USERACCOUNT}"
-    curl -X PUT -d "login_id=${1}" -H "Authorization: Token ${TOKEN}" -H 'Accept: application/json; charset=utf-8; indent=4' "${SEAFILE_URL}/api/v2.1/admin/users/${USERACCOUNT}/"
+  fi
+  curl -d "name=Bibliothek (verschlüsselt)&passwd=${DEFAULT_PW}" -H "Authorization: Token $USERTOKEN" -H 'Accept: application/json; indent=4' "${SEAFILE_URL}/api2/repos/"
+  docker exec seafile /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_a -n 'Bibliothek-A' -u "${USERACCOUNT}"
+  docker exec seafile /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_b -n 'Bibliothek-B' -u "${USERACCOUNT}"
+  curl -X PUT -d "login_id=${1}" -H "Authorization: Token ${TOKEN}" -H 'Accept: application/json; charset=utf-8; indent=4' "${SEAFILE_URL}/api/v2.1/admin/users/${USERACCOUNT}/"
 }
 
 create_user "hulk" "Hulk" false
@@ -255,7 +258,7 @@ create_user "ernie" "Ernie" false
 create_user "bert" "Bert" false
 create_user "monster" "Krümmelmonster" false
 create_user "elmo" "Elmo" false
-
+create_user "thunderbird" "Thunderbird Test User" false topsecret
 
 healthcheck /0
 echo "Seafile Server is ready..."
