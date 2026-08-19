@@ -1,7 +1,7 @@
 ---
 services:
   redis:
-    image: ${SEATABLE_REDIS_IMAGE:-redis:7.2.7-bookworm}
+    image: ${SEATABLE_REDIS_IMAGE:-redis:8.4.0-bookworm}
     restart: unless-stopped
     container_name: redis
     environment:

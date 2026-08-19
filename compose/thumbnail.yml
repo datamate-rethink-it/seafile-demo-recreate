@@ -3,9 +3,9 @@ services:
   thumbnail:
     image: ${THUMBNAIL_IMAGE:-seafileltd/thumbnail-server:13.0-latest}
     container_name: thumbnail
-    restart: always
+    restart: unless-stopped
     volumes:
-      - ${SEAFILE_VOLUME:-/opt/seafile-data}:/shared
+      - ${SEAFILE_VOLUME:-/opt/seafile-server}:/shared
     environment:
       - TIME_ZONE=${TIME_ZONE:-Europe/Berlin}
       - SEAFILE_MYSQL_DB_HOST=${SEAFILE_MYSQL_DB_HOST:-mariadb}
@@ -37,9 +37,18 @@ services:
       caddy.2_handle_path.0_rewrite: "/ping"
       caddy.2_handle_path.1_reverse_proxy: "{{upstreams 80}}"
     depends_on:
-      db:
+      mariadb:
         condition: service_healthy
+      seafile:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1/ping/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
+      - frontend-net
       - seafile-net
 
 networks:

@@ -1,0 +1,24 @@
+---
+services:
+  ofelia:
+    image: mcuadros/ofelia:0.3.18
+    container_name: ofelia
+    command: daemon --docker
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - TZ=${TIME_ZONE:-Europe/Berlin}
+    depends_on:
+      - seafile
+
+  # Garbage collector
+  seafile:
+    labels:
+      ofelia.enabled: "true"
+      ofelia.job-exec.gc.schedule: "@weekly"
+      ofelia.job-exec.gc.command: "/opt/seafile/seafile-server-latest/seaf-gc.sh"
+      ofelia.job-exec.clean-db.schedule: "@daily"
+      ofelia.job-exec.clean-db.command: "/opt/seafile/seafile-server-latest/seahub.sh python-env /opt/seafile/seafile-server-latest/seahub/manage.py clean_db_records"
+      ofelia.job-exec.clean-sessions.schedule: "@daily"
+      ofelia.job-exec.clean-sessions.command: "/opt/seafile/seafile-server-latest/seahub.sh python-env /opt/seafile/seafile-server-latest/seahub/manage.py clearsessions"
+

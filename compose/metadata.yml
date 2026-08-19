@@ -6,6 +6,7 @@ services:
     restart: unless-stopped
     volumes:
       - ${SEAFILE_VOLUME:-/opt/seafile-server}:/shared
+      - ./healthchecks/metadata.sh:/usr/local/bin/healthcheck.sh:ro
     environment:
       - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY:?Variable is not set or empty}
       - SEAFILE_MYSQL_DB_HOST=${SEAFILE_MYSQL_DB_HOST:-mariadb}
@@ -21,18 +22,18 @@ services:
       - MD_FILE_COUNT_LIMIT=${MD_FILE_COUNT_LIMIT:-100000}
       - SEAF_SERVER_STORAGE_TYPE=${SEAF_SERVER_STORAGE_TYPE:-disk}
       - MD_STORAGE_TYPE=${MD_STORAGE_TYPE:-disk}
-      - S3_COMMIT_BUCKET=${S3_COMMIT_BUCKET:-}
-      - S3_FS_BUCKET=${S3_FS_BUCKET:-}
-      - S3_BLOCK_BUCKET=${S3_BLOCK_BUCKET:-}
-      - S3_MD_BUCKET=${S3_MD_BUCKET:-}
-      - S3_HOST=${S3_HOST:-}
-      - S3_AWS_REGION=${S3_AWS_REGION:-}
-      - S3_USE_HTTPS=${S3_USE_HTTPS:-true}
-      - S3_PATH_STYLE_REQUEST=${S3_PATH_STYLE_REQUEST:-false}
-      - S3_KEY_ID=${S3_KEY_ID:-}
-      - S3_SECRET_KEY=${S3_SECRET_KEY:-}
-      - S3_USE_V4_SIGNATURE=${S3_USE_V4_SIGNATURE:-true}
-      - S3_SSE_C_KEY=${S3_SSE_C_KEY:-}
+      #- S3_COMMIT_BUCKET=${S3_COMMIT_BUCKET:-}
+      #- S3_FS_BUCKET=${S3_FS_BUCKET:-}
+      #- S3_BLOCK_BUCKET=${S3_BLOCK_BUCKET:-}
+      #- S3_MD_BUCKET=${S3_MD_BUCKET:-}
+      #- S3_HOST=${S3_HOST:-}
+      #- S3_AWS_REGION=${S3_AWS_REGION:-}
+      #- S3_USE_HTTPS=${S3_USE_HTTPS:-true}
+      #- S3_PATH_STYLE_REQUEST=${S3_PATH_STYLE_REQUEST:-false}
+      #- S3_KEY_ID=${S3_KEY_ID:-}
+      #- S3_SECRET_KEY=${S3_SECRET_KEY:-}
+      #- S3_USE_V4_SIGNATURE=${S3_USE_V4_SIGNATURE:-true}
+      #- S3_SSE_C_KEY=${S3_SSE_C_KEY:-}
       - CACHE_PROVIDER=${CACHE_PROVIDER:-redis}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
@@ -40,7 +41,14 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
-
+      seafile:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "/usr/local/bin/healthcheck.sh"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - seafile-net
 

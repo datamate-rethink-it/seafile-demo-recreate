@@ -58,11 +58,24 @@ services:
     labels:
       caddy: ${SEAFILE_SERVER_HOSTNAME}
       caddy.reverse_proxy: "{{upstreams 80}}"
+      # Default security headers (added 18.02.2026)
+      caddy.header.Strict-Transport-Security: "`max-age=31536000; includeSubdomains; preload`"
+      caddy.header.Referrer-Policy: "same-origin"
+      caddy.header.X-XSS-Protection: "`1; mode=block`"
+      caddy.header.X-Content-Type-Options: "nosniff"
+      caddy.header.X-Frame-Options: "SAMEORIGIN"
+      caddy.header.Set-Cookie: '(.*) "$1; SameSite=None; Secure"'
     depends_on:
       mariadb:
         condition: service_healthy
       redis:
         condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1/api2/ping/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     networks:
       - frontend-net
       - seafile-net
