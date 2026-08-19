@@ -6,7 +6,7 @@ SEAFILE_IMAGE=seafileltd/seafile-pro-mc:13.0-latest
 SEADOC_IMAGE=seafileltd/sdoc-server:2.0-latest
 SEASEARCH_IMAGE=seafileltd/seasearch:1.0-latest
 NOTIFICATION_SERVER_IMAGE=seafileltd/notification-server:13.0-latest
-ONLYOFFICE_IMAGE=onlyoffice/documentserver:8.3.3.1
+ONLYOFFICE_IMAGE=onlyoffice/documentserver:9.4
 MD_IMAGE=seafileltd/seafile-md-server:13.0-latest
 
 TIME_ZONE=Europe/Berlin
