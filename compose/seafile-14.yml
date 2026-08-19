@@ -35,7 +35,7 @@ services:
       - ENABLE_SEAFDAV=${ENABLE_SEAFDAV:-false}
       - SEAFDAV_WORKERS=${SEAFDAV_WORKERS:-5}
       # SeaDoc
-      - ENABLE_SEADOC=${ENABLE_SEADOC:-true}
+      - ENABLE_SEADOC=${ENABLE_SEADOC:-false}
       - SEADOC_SERVER_URL=${SEAFILE_SERVER_PROTOCOL:-https}://${SEAFILE_SERVER_HOSTNAME:?Variable is not set or empty}/sdoc-server
       # Cache/Redis
       - CACHE_PROVIDER=${CACHE_PROVIDER:-redis}
@@ -64,7 +64,7 @@ services:
       - SEAFILE_AI_SERVER_URL=${SEAFILE_AI_SERVER_URL:-http://seafile-ai:8888}
       - SEAFILE_AI_SECRET_KEY=${JWT_PRIVATE_KEY:?Variable is not set or empty}
       # Metadata
-      - ENABLE_METADATA_MANAGEMENT=${ENABLE_METADATA_MANAGEMENT:-False}
+      - ENABLE_METADATA_MANAGEMENT=${ENABLE_METADATA_MANAGEMENT:-false}
       - INNER_METADATA_SERVER_URL=${INNER_METADATA_SERVER_URL:-http://metadata:8084}
       - MD_FILE_COUNT_LIMIT=${MD_FILE_COUNT_LIMIT:-100000}
     labels:
