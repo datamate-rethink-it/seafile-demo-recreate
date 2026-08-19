@@ -1,6 +1,6 @@
 services:
   seafile:
-    image: ${SEAFILE_IMAGE:-seafileltd/seafile-pro-mc:13.0-latest}
+    image: ${SEAFILE_IMAGE:-seafileltd/seafile-pro-mc:14.0-latest}
     container_name: seafile
     restart: unless-stopped
     volumes:
@@ -11,7 +11,9 @@ services:
         read_only: ${SEAFILE_LICENSE_FORCE_READ_ONLY:-false}
 
     environment:
+      # General
       - TIME_ZONE=${TIME_ZONE:-Europe/Berlin}
+      # MariaDB
       - INIT_SEAFILE_MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:?Variable is not set or empty}
       - SEAFILE_MYSQL_DB_HOST=${SEAFILE_MYSQL_DB_HOST:-mariadb}
       - SEAFILE_MYSQL_DB_PORT=${SEAFILE_MYSQL_DB_PORT:-3306}
@@ -24,18 +26,23 @@ services:
       - INIT_SEAFILE_ADMIN_PASSWORD=${SEAFILE_ADMIN_PASSWORD:?Variable is not set or empty}
       - SEAFILE_SERVER_HOSTNAME=${SEAFILE_SERVER_HOSTNAME:?Variable is not set or empty}
       - SEAFILE_SERVER_PROTOCOL=${SEAFILE_SERVER_PROTOCOL:-https}
+      # Seafile
       - SITE_ROOT=${SITE_ROOT:-/}
       - NON_ROOT=${NON_ROOT:-false}
       - JWT_PRIVATE_KEY=${JWT_PRIVATE_KEY:?Variable is not set or empty}
       - SEAFILE_LOG_TO_STDOUT=${SEAFILE_LOG_TO_STDOUT:-true}
+      - ENABLE_GO_FILESERVER=${ENABLE_GO_FILESERVER:-true}
+      - ENABLE_SEAFDAV=${ENABLE_SEAFDAV:-false}
+      - SEAFDAV_WORKERS=${SEAFDAV_WORKERS:-5}
+      # SeaDoc
       - ENABLE_SEADOC=${ENABLE_SEADOC:-true}
       - SEADOC_SERVER_URL=${SEAFILE_SERVER_PROTOCOL:-https}://${SEAFILE_SERVER_HOSTNAME:?Variable is not set or empty}/sdoc-server
+      # Cache/Redis
       - CACHE_PROVIDER=${CACHE_PROVIDER:-redis}
       - REDIS_HOST=${REDIS_HOST:-redis}
       - REDIS_PORT=${REDIS_PORT:-6379}
       - REDIS_PASSWORD=${REDIS_PASSWORD:-}
-      #- MEMCACHED_HOST=${MEMCACHED_HOST:-memcached}
-      #- MEMCACHED_PORT=${MEMCACHED_PORT:-11211}
+      # Storage
       - SEAF_SERVER_STORAGE_TYPE=${SEAF_SERVER_STORAGE_TYPE:-disk}
       - S3_COMMIT_BUCKET=${S3_COMMIT_BUCKET:-}
       - S3_FS_BUCKET=${S3_FS_BUCKET:-}
@@ -48,12 +55,17 @@ services:
       - S3_USE_HTTPS=${S3_USE_HTTPS:-true}
       - S3_PATH_STYLE_REQUEST=${S3_PATH_STYLE_REQUEST:-false}
       - S3_SSE_C_KEY=${S3_SSE_C_KEY:-}
+      # Notification
       - ENABLE_NOTIFICATION_SERVER=${ENABLE_NOTIFICATION_SERVER:-false}
       - INNER_NOTIFICATION_SERVER_URL=${INNER_NOTIFICATION_SERVER_URL:-http://notification:8083}
       - NOTIFICATION_SERVER_URL=${NOTIFICATION_SERVER_URL:-${SEAFILE_SERVER_PROTOCOL:-http}://${SEAFILE_SERVER_HOSTNAME:?Variable is not set or empty}/notification}
+      # SeafileAI
       - ENABLE_SEAFILE_AI=${ENABLE_SEAFILE_AI:-false}
       - SEAFILE_AI_SERVER_URL=${SEAFILE_AI_SERVER_URL:-http://seafile-ai:8888}
       - SEAFILE_AI_SECRET_KEY=${JWT_PRIVATE_KEY:?Variable is not set or empty}
+      # Metadata
+      - ENABLE_METADATA_MANAGEMENT=${ENABLE_METADATA_MANAGEMENT:-False}
+      - INNER_METADATA_SERVER_URL=${INNER_METADATA_SERVER_URL:-http://metadata:8084}
       - MD_FILE_COUNT_LIMIT=${MD_FILE_COUNT_LIMIT:-100000}
     labels:
       caddy: ${SEAFILE_SERVER_HOSTNAME}
