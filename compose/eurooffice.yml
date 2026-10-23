@@ -1,0 +1,69 @@
+---
+x-eo-image: &eo-image ghcr.io/euro-office/documentserver:${EUROOFFICE_VERSION:-latest}
+
+services:
+  caddy:
+    ports:
+      - ${EUROOFFICE_PORT:-6233}:${EUROOFFICE_PORT:-6233}
+
+  eurooffice-init:
+    image: *eo-image
+    container_name: eurooffice-init
+    user: root
+    network_mode: none
+    restart: "no"
+    volumes:
+      - ${EUROOFFICE_DIR:-/opt/eurooffice}:/host
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        set -eu
+        printf '%s\n' \
+          "logs=/var/log/euro-office" \
+          "data=/var/lib/euro-office/documentserver" \
+          "private=/var/www/euro-office/Data" \
+          "fonts=/var/www/euro-office/documentserver/fonts/custom" \
+          "forgotten=/var/lib/euro-office/documentserver/App_Data/cache/files/forgotten" \
+          "config=/etc/euro-office/documentserver" \
+        | while IFS='=' read -r name src; do
+            dst="/host/$$name"
+            # einmal befuellt, nie wieder anfassen
+            if [ -d "$$dst" ] && [ -n "$$(ls -A "$$dst")" ]; then echo "skip $$dst"; continue; fi
+            mkdir -p "$$dst"
+            if [ -d "$$src" ]; then
+              cp -a "$$src/." "$$dst/"        # ownership je datei bleibt erhalten
+              ref="$$src"
+            else
+              ref="$$src"; while [ ! -d "$$ref" ]; do ref="$$(dirname "$$ref")"; done
+            fi
+            chown --reference="$$ref" "$$dst" # nur das verzeichnis selbst
+            chmod --reference="$$ref" "$$dst"
+            echo "ok  $$dst  <-  $$src"
+          done
+
+  eurooffice:
+    image: *eo-image
+    container_name: eurooffice
+    restart: unless-stopped
+    depends_on:
+      eurooffice-init:
+        condition: service_completed_successfully
+    environment:
+      - JWT_ENABLED=${EUROOFFICE_JWT_ENABLED:-true}
+      - JWT_SECRET=${EUROOFFICE_JWT_SECRET:?Variable is not set or empty}
+    volumes:
+      - ${EUROOFFICE_DIR:-/opt/eurooffice}/logs:/var/log/euro-office
+      - ${EUROOFFICE_DIR:-/opt/eurooffice}/data:/var/lib/euro-office/documentserver
+      - ${EUROOFFICE_DIR:-/opt/eurooffice}/private:/var/www/euro-office/Data
+      - ${EUROOFFICE_DIR:-/opt/eurooffice}/fonts:/var/www/euro-office/documentserver/fonts/custom
+      - ${EUROOFFICE_DIR:-/opt/eurooffice}/forgotten:/var/lib/euro-office/documentserver/App_Data/cache/files/forgotten
+      - ${EUROOFFICE_DIR:-/opt/eurooffice}/config:/etc/euro-office/documentserver
+    labels:
+      caddy: ${SEAFILE_SERVER_HOSTNAME}:${EUROOFFICE_PORT:-6233}
+      caddy.reverse_proxy: "{{upstreams 80}}"
+    networks:
+      - frontend-net
+
+networks:
+  frontend-net:
+    name: frontend-net
