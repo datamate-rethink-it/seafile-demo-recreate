@@ -114,7 +114,7 @@ if [ ${OFFICE_EDITOR} == "collabora" ]; then
 # collabora
 OFFICE_SERVER_TYPE = 'CollaboraOffice'
 ENABLE_OFFICE_WEB_APP = True
-OFFICE_WEB_APP_BASE_URL = '${SEAFILE_URL}:6232/hosting/discovery'
+OFFICE_WEB_APP_BASE_URL = '${SEAFILE_URL}/collabora/hosting/discovery'
 WOPI_ACCESS_TOKEN_EXPIRATION = 30 * 60   # seconds
 OFFICE_WEB_APP_FILE_EXTENSION = ('odp', 'ods', 'odt', 'xls', 'xlsb', 'xlsm', 'xlsx','ppsx', 'ppt', 'pptm', 'pptx', 'doc', 'docm', 'docx')
 ENABLE_OFFICE_WEB_APP_EDIT = True
@@ -237,6 +237,12 @@ done
 TOKEN=$(/usr/bin/curl -s -d "username=${SEAFILE_ADMIN_EMAIL}&password=${SEAFILE_ADMIN_PASSWORD}" "${SEAFILE_URL}/api2/auth-token/" | /usr/bin/jq -r ".token")
 curl -H "Authorization: Token ${TOKEN}" -F "avatar=@/opt/seafile-demo-recreate/files/avatars/admin.png" -F "avatar_size=64" "${SEAFILE_URL}/api/v2.1/user-avatar/"
 
+# seaf-import.sh wrapper was removed in seafile pro 13.0.29, the binary still exists -> call it directly
+# usage: seaf_import <dir inside container> <library name> <owner>
+function seaf_import(){
+  docker exec seafile bash -c 'cd /opt/seafile/seafile-server-latest/seafile && LD_LIBRARY_PATH=lib:lib64 bin/seaf-import -c /shared/seafile/conf -d /shared/seafile/seafile-data "$@"' _ -p "$1" -n "$2" -u "$3"
+}
+
 function create_user(){
   local PW="${4:-${DEFAULT_PW}}"
   USERACCOUNT=$(curl -X POST -d "email=${1}@datamate.org&password=${PW}&name=${2}&is_staff=${3}" -H "Authorization: Token ${TOKEN}" -H 'Accept: application/json; indent=4' "${SEAFILE_URL}/api/v2.1/admin/users/" | /usr/bin/jq -r ".email" )
@@ -245,8 +251,8 @@ function create_user(){
     curl -H "Authorization: Token ${USERTOKEN}" -F "avatar=@/opt/seafile-demo-recreate/files/avatars/${1}.png" -F "avatar_size=64" "${SEAFILE_URL}/api/v2.1/user-avatar/"
   fi
   curl -d "name=Bibliothek (verschlüsselt)&passwd=${DEFAULT_PW}" -H "Authorization: Token $USERTOKEN" -H 'Accept: application/json; indent=4' "${SEAFILE_URL}/api2/repos/"
-  docker exec seafile /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_a -n 'Bibliothek-A' -u "${USERACCOUNT}"
-  docker exec seafile /opt/seafile/seafile-server-latest/seaf-import.sh -p /shared/seafile/bib_import/bibliothek_b -n 'Bibliothek-B' -u "${USERACCOUNT}"
+  seaf_import /shared/seafile/bib_import/bibliothek_a 'Bibliothek-A' "${USERACCOUNT}"
+  seaf_import /shared/seafile/bib_import/bibliothek_b 'Bibliothek-B' "${USERACCOUNT}"
   curl -X PUT -d "login_id=${1}" -H "Authorization: Token ${TOKEN}" -H 'Accept: application/json; charset=utf-8; indent=4' "${SEAFILE_URL}/api/v2.1/admin/users/${USERACCOUNT}/"
 }
 
