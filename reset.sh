@@ -230,7 +230,7 @@ while true; do
     healthcheck /fail
     exit 1
   fi
-  
+  sleep "$INTERVAL" # Wait for the specified interval before retrying
 done
 
 # CREATE USERS 
