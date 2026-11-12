@@ -22,7 +22,7 @@
 
 services:
   collabora:
-    image: ${COLLABORA_IMAGE:-collabora/code:24.04.5.1.1}
+    image: ${COLLABORA_IMAGE:-collabora/code:24.04.6.1.1}
     container_name: collabora
     restart: unless-stopped
     expose:
