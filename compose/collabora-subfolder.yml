@@ -1,0 +1,58 @@
+---
+# Collabora Online unter https://${SEAFILE_SERVER_HOSTNAME}/collabora/ statt auf eigenem Port.
+#
+# Funktionsweise:
+# - coolwsd bekommt per net.service_root den Präfix /collabora und liefert ALLE
+#   Pfade (hosting/discovery, browser/, cool/... inkl. WebSockets) darunter aus.
+# - caddy-docker-proxy merged Labels mehrerer Container mit gleicher Site-Adresse
+#   in EINEN Site-Block. Dieser Container hängt nur einen `handle /collabora/*`
+#   an den bestehenden Block von seafile an. `handle` wird in Caddy vor dem
+#   (nicht gematchten) reverse_proxy von seafile ausgewertet.
+# - WICHTIG: `handle` (nicht `handle_path`), damit der Präfix NICHT entfernt wird.
+# - Kein zusätzlicher Port, keine Änderung an caddy.yml oder seafile-*.yml,
+#   nginx im seafile-Container bleibt unberührt (Requests erreichen ihn gar nicht).
+#
+# seahub_settings.py:
+#   OFFICE_SERVER_TYPE = 'CollaboraOffice'
+#   ENABLE_OFFICE_WEB_APP = True
+#   OFFICE_WEB_APP_BASE_URL = 'https://<SEAFILE_SERVER_HOSTNAME>/collabora/hosting/discovery'
+#   (Rest wie bisher)
+#
+# Statt collabora.yml verwenden, nicht zusätzlich (gleicher container_name).
+
+services:
+  collabora:
+    image: ${COLLABORA_IMAGE:-collabora/code:24.04.5.1.1}
+    container_name: collabora
+    restart: unless-stopped
+    expose:
+      - 9980
+    cap_add:
+      - MKNOD
+    environment:
+      #- "aliasgroup1=https://${SEAFILE_SERVER_HOSTNAME}" # optional: WOPI-Hosts einschränken
+      - "server_name=${SEAFILE_SERVER_HOSTNAME}" # ohne Port, Präfix kommt über service_root
+      - "username=${COLLABORA_ADMIN:-admin}"
+      - "password=${COLLABORA_PW:-disabled_by_default}"
+      - "DONT_GEN_SSL_CERT=true"
+      - "TZ=${TIME_ZONE:-Europe/Berlin}"
+      - extra_params=--o:net.service_root=/collabora
+        --o:admin_console.enable=${COLLABORA_ENABLE_ADMIN_CONSOLE:-false}
+        --o:ssl.enable=false
+        --o:ssl.termination=true
+        --o:user_interface.mode=classic
+        --o:remote_font_config.url=${COLLABORA_REMOTE_FONT:-}
+        --o:logging.file[@enable]=${COLLABORA_ENABLE_FILE_LOGGING:-false}
+        --o:logging.file.property[0]=/opt/cool/logs/coolwsd.log
+    #volumes:
+    #  - "${COLLABORA_PATH:-/opt/collabora}/logs:/opt/cool/logs/" # chmod 777 needed
+    labels:
+      caddy: ${SEAFILE_SERVER_HOSTNAME}
+      caddy.handle: /collabora/*
+      caddy.handle.reverse_proxy: "{{upstreams 9980}}"
+    networks:
+      - frontend-net
+
+networks:
+  frontend-net:
+    name: frontend-net
